@@ -55,7 +55,7 @@ class DataSet:
                 if i == 1:
                     best = line.split()[-1][:-1]
                     self.best_known_solution = int(best)
-                if i == 5:
+                elif i == 5:
                     self.max_load = int(line.split()[2])
         fp.close()
         # Create network and store name + capacity
@@ -94,9 +94,8 @@ class DataSet:
         for u in self.G.nodes():
             if u != "Sink":
                 for v in self.G.nodes():
-                    if v != "Source":
-                        if u != v:
-                            self.G.add_edge(u, v, cost=round(self.distance(u, v), 1))
+                    if v != "Source" and u != v:
+                        self.G.add_edge(u, v, cost=round(self.distance(u, v), 1))
 
         # relabel
         before = [v for v in self.G.nodes() if v not in ["Source", "Sink"]]

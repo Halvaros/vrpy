@@ -52,9 +52,8 @@ class MasterSolvePulp(MasterProblemBase):
         relax = self.relax.model.deepcopy()
         constrs = {}
         while depth <= max_depth and len(tabu_list) <= max_discrepancy:
-            non_integer_vars = list(
-                var for var in relax.variables()
-                if abs(var.varValue - round(var.varValue)) != 0)
+            non_integer_vars = [var for var in relax.variables()
+                        if abs(var.varValue - round(var.varValue)) != 0]
             # All non-integer variables not already fixed in this or any
             # iteration of the diving heuristic
             vars_to_fix = [
@@ -163,11 +162,15 @@ class MasterSolvePulp(MasterProblemBase):
         for r in self.routes:
             val = pulp.value(self.y[r.graph["name"]])
             if val is not None and val > 0:
-                logger.debug("%s cost %s load %s" % (
-                    shortest_path(r, "Source", "Sink"),
-                    r.graph["cost"],
-                    sum([self.G.nodes[v]["demand"] for v in r.nodes()]),
-                ))
+                logger.debug(
+                    "%s cost %s load %s"
+                    % (
+                        shortest_path(r, "Source", "Sink"),
+                        r.graph["cost"],
+                        sum(self.G.nodes[v]["demand"] for v in r.nodes()),
+                    )
+                )
+
                 best_routes.append(r)
         if self.drop_penalty:
             self.dropped_nodes = [
@@ -192,11 +195,7 @@ class MasterSolvePulp(MasterProblemBase):
         self.prob = pulp.LpProblem("MasterProblem", pulp.LpMinimize)
 
         # vartype represents whether or not the variables are relaxed
-        if self.relax:
-            self.vartype = pulp.LpContinuous
-        else:
-            self.vartype = pulp.LpInteger
-
+        self.vartype = pulp.LpContinuous if self.relax else pulp.LpInteger
         # create variables, one per route
         self._add_route_selection_variables()
 
@@ -262,9 +261,8 @@ class MasterSolvePulp(MasterProblemBase):
 
                 visit_node = pulp.lpSum(
                     [self.y[r.graph["name"]] for r in self.routes_with_node[v]])
-                if self.periodic:
-                    if v in self.dummy:
-                        visit_node += self.dummy[v]
+                if self.periodic and v in self.dummy:
+                    visit_node += self.dummy[v]
                 if self.relax:
                     # set covering constraints
                     # cuts the dual space in half

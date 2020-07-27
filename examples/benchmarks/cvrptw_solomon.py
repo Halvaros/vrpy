@@ -93,11 +93,10 @@ class DataSet:
         for u in self.G.nodes():
             if u != "Sink":
                 for v in self.G.nodes():
-                    if v != "Source":
-                        if u != v:
-                            self.G.add_edge(
-                                u, v, cost=self.distance(u, v), time=self.distance(u, v)
-                            )
+                    if v != "Source" and u != v:
+                        self.G.add_edge(
+                            u, v, cost=self.distance(u, v), time=self.distance(u, v)
+                        )
 
     def distance(self, u, v):
         """2D Euclidian distance between two nodes.
@@ -124,10 +123,7 @@ class DataSet:
         solver="cbc",
     ):
         """Instantiates instance as VRP and solves."""
-        if cspy:
-            self.G.graph["subproblem"] = "cspy"
-        else:
-            self.G.graph["subproblem"] = "lp"
+        self.G.graph["subproblem"] = "cspy" if cspy else "lp"
         print(self.G.graph["name"], self.G.graph["subproblem"])
         print("===========")
         prob = VehicleRoutingProblem(
