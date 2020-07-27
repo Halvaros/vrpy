@@ -763,21 +763,30 @@ class VehicleRoutingProblem:
                 % (self._pricing_strategy, strategies)
             )
         if self.mixed_fleet:
-            if self.load_capacity and self.num_vehicles:
-                if not len(self.load_capacity) == len(self.num_vehicles):
-                    raise ValueError(
-                        "Input arguments load_capacity and num_vehicles must have same dimension."
-                    )
-            if self.load_capacity and self.fixed_cost:
-                if not len(self.load_capacity) == len(self.fixed_cost):
-                    raise ValueError(
-                        "Input arguments load_capacity and fixed_cost must have same dimension."
-                    )
-            if self.num_vehicles and self.fixed_cost:
-                if not len(self.num_vehicles) == len(self.fixed_cost):
-                    raise ValueError(
-                        "Input arguments num_vehicles and fixed_cost must have same dimension."
-                    )
+            if (
+                self.load_capacity
+                and self.num_vehicles
+                and len(self.load_capacity) != len(self.num_vehicles)
+            ):
+                raise ValueError(
+                    "Input arguments load_capacity and num_vehicles must have same dimension."
+                )
+            if (
+                self.load_capacity
+                and self.fixed_cost
+                and len(self.load_capacity) != len(self.fixed_cost)
+            ):
+                raise ValueError(
+                    "Input arguments load_capacity and fixed_cost must have same dimension."
+                )
+            if (
+                self.num_vehicles
+                and self.fixed_cost
+                and len(self.num_vehicles) != len(self.fixed_cost)
+            ):
+                raise ValueError(
+                    "Input arguments num_vehicles and fixed_cost must have same dimension."
+                )
             for (i, j) in self.G.edges():
                 if not isinstance(self.G.edges[i, j]["cost"], list):
                     raise TypeError(
@@ -832,11 +841,7 @@ class VehicleRoutingProblem:
             logger.warning("Pricing_strategy changed to 'Exact'.")
         # pickup delivery expects at least one request
         if self.pickup_delivery:
-            request = False
-            for v in self.G.nodes():
-                if "request" in self.G.nodes[v]:
-                    request = True
-                    break
+            request = any("request" in self.G.nodes[v] for v in self.G.nodes())
             if not request:
                 raise KeyError("pickup_delivery option expects at least one request.")
 
@@ -858,8 +863,8 @@ class VehicleRoutingProblem:
                 best_cost = 1e10
                 for k in range(self._vehicle_types):
                     # If different vehicles, the cheapest feasible one is accounted for
-                    cost = sum([self._H.edges[i, j]["cost"][k] for (i, j) in edges])
-                    load = sum([self._H.nodes[i]["demand"] for i in route])
+                    cost = sum(self._H.edges[i, j]["cost"][k] for (i, j) in edges)
+                    load = sum(self._H.nodes[i]["demand"] for i in route)
                     if cost < best_cost:
                         if self.load_capacity:
                             if load <= self.load_capacity[k]:
@@ -875,15 +880,12 @@ class VehicleRoutingProblem:
         for (i, j) in self.G.edges():
             if not isinstance(self.G.edges[i, j]["cost"], list):
                 self.G.edges[i, j]["cost"] = [self.G.edges[i, j]["cost"]]
-        if self.num_vehicles:
-            if not isinstance(self.num_vehicles, list):
-                self.num_vehicles = [self.num_vehicles]
-        if self.fixed_cost:
-            if not isinstance(self.fixed_cost, list):
-                self.fixed_cost = [self.fixed_cost]
-        if self.load_capacity:
-            if not isinstance(self.load_capacity, list):
-                self.load_capacity = [self.load_capacity]
+        if self.num_vehicles and not isinstance(self.num_vehicles, list):
+            self.num_vehicles = [self.num_vehicles]
+        if self.fixed_cost and not isinstance(self.fixed_cost, list):
+            self.fixed_cost = [self.fixed_cost]
+        if self.load_capacity and not isinstance(self.load_capacity, list):
+            self.load_capacity = [self.load_capacity]
 
     def _define_vehicle_types(self):
         """
@@ -923,7 +925,7 @@ class VehicleRoutingProblem:
         for route in self.best_routes:
             edges = list(zip(self.best_routes[route][:-1], self.best_routes[route][1:]))
             k = self._best_routes_vehicle_type[route]
-            cost[route] = sum([self._H.edges[i, j]["cost"][k] for (i, j) in edges])
+            cost[route] = sum(self._H.edges[i, j]["cost"][k] for (i, j) in edges)
         return cost
 
     @property
@@ -937,9 +939,7 @@ class VehicleRoutingProblem:
         ):
             return load
         for route in self.best_routes:
-            load[route] = sum(
-                [self._H.nodes[v]["demand"] for v in self.best_routes[route]]
-            )
+            load[route] = sum(self._H.nodes[v]["demand"] for v in self.best_routes[route])
         return load
 
     @property
@@ -977,11 +977,12 @@ class VehicleRoutingProblem:
         for route in self.best_routes:
             edges = list(zip(self.best_routes[route][:-1], self.best_routes[route][1:]))
             # Travel times
-            duration[route] = sum([self._H.edges[i, j]["time"] for (i, j) in edges])
+            duration[route] = sum(self._H.edges[i, j]["time"] for (i, j) in edges)
             # Service times
             duration[route] += sum(
-                [self._H.nodes[v]["service_time"] for v in self.best_routes[route]]
+                self._H.nodes[v]["service_time"] for v in self.best_routes[route]
             )
+
         return duration
 
     @property

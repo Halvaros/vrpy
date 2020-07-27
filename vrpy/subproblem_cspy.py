@@ -139,13 +139,12 @@ class SubProblemCSPY(SubProblemBase):
             self.max_res[3] = 0
             # Maximum feasible arrival time
             self.T = max(
-                [
-                    self.sub_G.nodes[v]["upper"]
-                    + self.sub_G.nodes[v]["service_time"]
-                    + self.sub_G.edges[v, "Sink"]["time"]
-                    for v in self.sub_G.predecessors("Sink")
-                ]
+                self.sub_G.nodes[v]["upper"]
+                + self.sub_G.nodes[v]["service_time"]
+                + self.sub_G.edges[v, "Sink"]["time"]
+                for v in self.sub_G.predecessors("Sink")
             )
+
         if self.load_capacity and self.distribution_collection:
             self.max_res[4] = self.load_capacity[self.vehicle_type]
             self.max_res[5] = self.load_capacity[self.vehicle_type]
@@ -233,11 +232,7 @@ class SubProblemCSPY(SubProblemBase):
         new_res[2] = max(new_res[2] + service_time + travel_time, a_j)
 
         # time-window feasibility resource
-        if not self.time_windows or new_res[2] <= b_j:
-            new_res[3] = 0
-        else:
-            new_res[3] = 1
-
+        new_res[3] = 0 if not self.time_windows or new_res[2] <= b_j else 1
         if self.distribution_collection:
             # Pickup
             new_res[4] += self.sub_G.nodes[j]["collect"]
