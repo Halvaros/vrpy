@@ -32,10 +32,7 @@ class CsvTableVRP(CsvTableBase):
                 beststring = (str(fp.readline())[:-2]).split()[-1]
                 self.best_known_solution = int(beststring)
             fp.close()
-        if self.instance_type == "solomon":
-            self.best_known_solution = None
-
-        if self.instance_type == "cordeau":
+        elif self.instance_type in ["solomon", "cordeau"]:
             self.best_known_solution = None
 
     def get_data_from_VRP_instance(self,
@@ -51,12 +48,12 @@ class CsvTableVRP(CsvTableBase):
         prob.solve(**kwargs, dive=dive)
         time2 = time.time()
 
-        if best_known_solution == None:
+        if best_known_solution is None:
             self._find_optimal()
         else:
             self.best_known_solution = best_known_solution
 
-        self.dive = dive if not dive == None else False
+        self.dive = dive if dive is not None else False
         self.pricing_strategy = pricing_strategy
         self.subproblem_type = subproblem_type
 
@@ -66,7 +63,7 @@ class CsvTableVRP(CsvTableBase):
         self.integrality_gap = (self.upper_bound -
                                 self.lower_bound) / self.lower_bound * 100
 
-        if not self.best_known_solution == None:
+        if self.best_known_solution is not None:
             self.optimality_gap = (self.upper_bound - self.best_known_solution
                                    ) / self.best_known_solution * 100
             self.optimal = (self.optimality_gap == 0)

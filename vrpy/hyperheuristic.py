@@ -117,11 +117,7 @@ class HyperHeuristic:
             self.current_objective_value = new_objective_value
             return True
         else:
-            if uniform(0, 1) < exp(r):
-                return True
-            else:
-
-                return False
+            return uniform(0, 1) < exp(r)
 
     def update_parameters(self):
         """Updates the high-level parameters
@@ -135,7 +131,7 @@ class HyperHeuristic:
         self.q[i] = (old_q + self.r[i]) / self.n[i]
 
         for j in range(len(self.pool)):
-            if not self.n[j] == 0:
+            if self.n[j] != 0:
                 self.heuristic_points[
                     j] = self.q[j] + self.scaling_factor * sqrt(
                         2 * log(sum(self.n)) / self.n[j])

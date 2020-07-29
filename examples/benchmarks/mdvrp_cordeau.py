@@ -48,7 +48,7 @@ class DataSet:
                         self.n_vertices = min(self.n_customers, n_vertices)
                     else:
                         self.n_vertices = self.n_customers
-                if i == 2:
+                elif i == 2:
                     self.max_load = int(line.split()[1])
         fp.close()
 
@@ -127,10 +127,7 @@ class DataSet:
 
     def solve(self, initial_routes=None, cspy=False, dive=False):
         """Instantiates instance as VRP and solves."""
-        if cspy:
-            self.G.graph["subproblem"] = "cspy"
-        else:
-            self.G.graph["subproblem"] = "lp"
+        self.G.graph["subproblem"] = "cspy" if cspy else "lp"
         print(self.G.graph["name"], self.G.graph["subproblem"])
         print("===========")
         prob = VehicleRoutingProblem(
