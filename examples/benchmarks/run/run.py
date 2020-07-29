@@ -87,20 +87,13 @@ def iterate_through_instances_single_thread(data_from=None, time_limit=100):
     """ 
     Iterates through all problem instances and prints performance profile in results folder without parallellisation 
     """
-    if not data_from == None:
-        path = data_from
-    else:
-        path = "examples/benchmarks/data/cvrp/"
-
+    path = data_from if data_from is not None else "examples/benchmarks/data/cvrp/"
     for file in os.listdir(path):
         filename = os.fsdecode(file)
         if filename.endswith(".vrp"):
             for dive in [True, False]:
                 for subproblem_type in ["lp", "cspy"]:
-                    if subproblem_type == "cspy":
-                        cspy = True
-                    else:
-                        cspy = False
+                    cspy = True if subproblem_type == "cspy" else False
                     for pricing_strategy in [
                             "BestPaths", "BestEdges1", "BestEdges2", "Exact"
                     ]:
@@ -122,7 +115,7 @@ def iterate_through_instances_multi_thread(path_from=None,
     """
     Iterates through all problem instances and prints performance profile in results folder using parallellisation
     """
-    if not path_from == None:
+    if path_from is not None:
         path_from = path_from
     else:
         #Run from vrpy
