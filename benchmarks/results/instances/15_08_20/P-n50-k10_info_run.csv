@@ -1,0 +1,2 @@
+Iteration,Objective,Hyper choice BP,Hyper choice BE1,Hyper choice BE2,Hyper choice Exact,Average runtime,Quality BP,Quality BE1,Quality BE2,Quality Exact,Selection score BP,Selection score BE1,Selection score BE2,Selection score Exact,Exploration,Theta,Accepted columns BP,Accepted columns BE1,Accepted columns BE2,Accepted columns Exact,Active path BP,Active path BE1,Active path BE2,Active path Exact,No improvement,Total active paths
+1,732.5,0,0,0,0,0,0,0,0,0,10000000000.0,10000000000.0,10000000000.0,10000000000.0,"[0, 0, 0, 0]",1,0,0,0,0,0,0,0,0,0,14

@@ -9,6 +9,8 @@ from typing import List, Dict, Union
 
 from networkx import relabel_nodes, DiGraph
 
+#from benchmarks.epost import send_email
+
 from benchmarks.augerat_dataset import AugeratDataSet
 from benchmarks.solomon_dataset import SolomonDataSet
 from benchmarks.utils.csv_table import CsvTable
@@ -36,7 +38,7 @@ parser.add_argument('--instance_types',
 parser.add_argument('--time_limit',
                     '-t',
                     type=int,
-                    default=10,
+                    default=500,
                     dest="TIME_LIMIT",
                     help='Time limit for each instance in seconds.' +
                     ' Default: 10')
@@ -76,7 +78,8 @@ PERFORMANCE_SOLVER_PARAMS: Dict[str, Dict[str, Union[bool, str]]] = {
         'dive': False,
         'greedy': True,
         'cspy': True,
-        'pricing_strategy': 'Hyper'
+        'pricing_strategy': 'Hyper',
+        'time_limit': TIME_LIMIT
     },
     'cvrptw': {
         'dive': False,
@@ -99,11 +102,10 @@ def run_series():
                 _run_single_problem(path_to_instance,
                                     **PERFORMANCE_SOLVER_PARAMS[instance_type])
             else:
-                for dive in [True, False]:
-                    for cspy in [True, False]:
+                for dive in [False]:
+                    for cspy in [True]:
                         for pricing_strategy in [
-                                "BestPaths", "BestEdges1", "BestEdges2",
-                                "Exact", "Hyper"
+                                "BestEdges1", "Exact", "Hyper"
                         ]:
                             for greedy in [True, False]:
                                 _run_single_problem(
@@ -133,7 +135,7 @@ def run_parallel():
                 [False],  # dive
                 [True],  # greedy
                 [True],  # cspy
-                ["Hyper", "BestPaths", "BestEdges1", "BestEdges2", "Exact"]))
+                ["BestEdges1", "Exact"]))
 
     pool = Pool(processes=CPU_COUNT)
     with pool:
@@ -175,7 +177,9 @@ def _run_single_problem(path_to_instance: Path, **kwargs):
                                  load_capacity=data.max_load,
                                  time_windows=bool(instance_type == "cvrptw"))
     prob.solve(**kwargs, compute_runtime=True)
-    #logger.info("keywordargs %s", kwargs)
+    logger.info("keywordargs %s", kwargs)
+
+    #send_email("Instance name %s, pricing_strategy" % instance_name)
     # Output results
     table = CsvTable(instance_name=instance_name,
                      comp_time=prob.comp_time,

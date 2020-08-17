@@ -347,9 +347,10 @@ class HyperHeuristic:
             if self.n[k] > 0:
                 name = self.heur_names[k]
 
-                active_k = self.active_dict[name]
+                norm_0 = 0 if active == 0 else self.active_dict[name] / active
 
-                total_added = self.added_columns[k]
+                norm_4 = 0 if self.added_columns[
+                    k] == 0 else self.active_dict[name] / self.added_columns[k]
 
                 norm_runtime = self.norm_runtime_list[k]
 
@@ -358,8 +359,8 @@ class HyperHeuristic:
                     norm_spread = self.exp_list[k] / sum_exp_list
 
                 self.q[
-                    k] = self.w0 * active_k / active + self.w1 * norm_runtime + self.w3 * self.norm_objective_decrease_list[
-                        k] + self.w4 * active_k / total_added
+                    k] = self.w0 * norm_0 + self.w1 * norm_runtime + self.w3 * self.norm_objective_decrease_list[
+                        k] + self.w4 * norm_4
 
                 self.heuristic_points[k] = self.theta * self.q[
                     k] + self.w2 * norm_spread * (1 - self.theta)
