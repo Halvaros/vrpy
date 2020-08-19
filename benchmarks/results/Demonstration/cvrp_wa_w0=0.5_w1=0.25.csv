@@ -1,0 +1,8 @@
+Instance,Pricing strategy,Subproblem type,Dived,Greedy,Runtime,# of iterations,Integrality gap,Optimality gap,Optimal, w0, w1, w2, w3, w4
+P-n16-k8.vrp,Hyper,cspy,False,True,7.897180080413818,32,2.0408164329677505,0.0,True, 0.5, 0.25, 0.3, 0.0, 0.0
+P-n19-k2.vrp,Hyper,cspy,False,True,213.1484339237213,157,7.202798139884606,3.30188679245283,False, 0.5, 0.25, 0.3, 0.0, 0.0
+P-n20-k2.vrp,Hyper,cspy,False,True,634.7771801948547,281,4.388714498258661,2.7777777777777777,False, 0.5, 0.25, 0.3, 0.0, 0.0
+P-n21-k2.vrp,Hyper,cspy,False,True,926.3291068077087,401,0.3516998827667058,1.4218009478672986,False, 0.5, 0.25, 0.3, 0.0, 0.0
+A-n33-k5.vrp,Hyper,cspy,False,True,4315.012586593628,115,2.110199258449561,1.361573373676248,False, 0.5, 0.25, 0.3, 0.0, 0.0
+A-n32-k5.vrp,Hyper,cspy,False,True,5201.7895748615265,426,7.625947951846024,4.209183673469387,False, 0.5, 0.25, 0.3, 0.0, 0.0
+
